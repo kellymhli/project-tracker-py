@@ -33,7 +33,12 @@ def get_student_by_github(github):
 
     row = db_cursor.fetchone()
 
-    print("Student: {} {}\nGitHub account: {}".format(row[0], row[1], row[2]))
+    if row is None:
+        print("That student is not in the database.")
+    else:
+        print("Student: {} {}\nGitHub account: {}".format(row[0],
+                                                          row[1],
+                                                          row[2]))
 
 
 def make_new_student(first_name, last_name, github):
