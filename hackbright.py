@@ -123,6 +123,24 @@ def add_project(title, description, max_grade):
     db.session.commit()
 
 
+def get_all_grades_for_a_student(github):
+
+    QUERY = """
+        SELECT grade, project_title
+        FROM grades AS g
+        JOIN projects AS p
+        ON g.project_title = p.title
+        WHERE g.student_github = :github
+    """
+
+    db_cursor = db.session.execute(QUERY, {'github': github})
+
+    rows = db_cursor.fetchall()  #[(20, Blockly), (20, Markov)]
+
+    for row in rows:
+        print(f"Grade: {row[0]} Project: {row[1]}")
+
+
 def handle_input():
     """Main loop.
 
@@ -151,11 +169,11 @@ def handle_input():
             get_project_by_title(title)
 
         elif command == "get_grade":
-            github, title = args # unpack
+            github, title = args  # unpack
             get_grade_by_github_title(github, title)
 
         elif command == "assign_grade":
-            github, title, grade = args # unpack
+            github, title, grade = args  # unpack
             assign_grade(github, title, grade)
 
         elif command == "add_project":
@@ -163,6 +181,10 @@ def handle_input():
             description = ' '.join(args[1:-1])
             max_grade = args[-1]
             add_project(title, description.title(), max_grade)
+
+        elif command == "student_grades":
+            github = args[0]
+            get_all_grades_for_a_student(github)
 
         else:
             if command != "quit":
