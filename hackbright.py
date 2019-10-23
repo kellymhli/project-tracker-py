@@ -61,7 +61,7 @@ def get_project_by_title(title):
     """Given a project title, print information about the project."""
 
     QUERY = """
-        SELECT * 
+        SELECT *
         FROM projects
         WHERE title=:title
     """
@@ -77,7 +77,7 @@ def get_grade_by_github_title(github, title):
     """Print grade student received for a project."""
 
     QUERY = """
-        SELECT grade 
+        SELECT grade
         FROM grades
         WHERE student_github = :github AND project_title = :title
     """
@@ -99,13 +99,28 @@ def assign_grade(github, title, grade):
         AND project_title = :title
      """
 
-    db_cursor = db.session.execute(QUERY_UPDATE, {'github': github, 
-                                                  'title': title, 
-                                                  'grade': grade})
+    db.session.execute(QUERY_UPDATE, {'github': github,
+                                      'title': title,
+                                      'grade': grade})
 
     db.session.commit()
 
     print(f"Grade has been updated.")
+
+
+def add_project(title, description, max_grade):
+    """Add a project to the projects table."""
+
+    QUERY = """
+        INSERT INTO projects (title, description, max_grade)
+        VALUES (:title, :description, :max_grade)
+    """
+
+    db.session.execute(QUERY, {'title': title,
+                               'description': description,
+                               'max_grade': max_grade})
+
+    db.session.commit()
 
 
 def handle_input():
@@ -142,6 +157,12 @@ def handle_input():
         elif command == "assign_grade":
             github, title, grade = args # unpack
             assign_grade(github, title, grade)
+
+        elif command == "add_project":
+            title = args[0]
+            description = ' '.join(args[1:-1])
+            max_grade = args[-1]
+            add_project(title, description.title(), max_grade)
 
         else:
             if command != "quit":
